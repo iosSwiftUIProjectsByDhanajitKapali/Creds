@@ -10,6 +10,7 @@ import SwiftUI
 public struct HomeView: View {
     
     @State var debitOrCredit = 0
+    @State var cards = CardModel.generateRandomCards()
     
     public init(debitOrCredit: Int = 0) {
         self.debitOrCredit = debitOrCredit
@@ -51,7 +52,7 @@ public struct HomeView: View {
                     .fontWeight(.bold)
                 Spacer()
             }
-            listView(cards: [])
+            listView(cards: cards)
         }
     }
     
@@ -70,13 +71,20 @@ public struct HomeView: View {
     }
     
     @ViewBuilder func listView(cards: [CardModel]) -> some View {
-        ScrollView() {
-            ForEach(CardModel.generateRandomCards(), id: \.self) { card in
-                CardView(cardInfo: card)
-                    .padding()
+        ZStack {
+            VStack {
+                ZStack {
+                    ForEach(Array(cards.enumerated()), id: \.element) { index, card in
+                        CardView(cardInfo: card) {
+                            withAnimation {
+                                removeCard(at: index)
+                            }
+                        }
+                        .stacked(at: index, in: cards.count)
+                    }
+                }
             }
         }
-        .scrollIndicators(.hidden)
     }
     
     @ViewBuilder func segmentedCardsView() -> some View {
@@ -100,9 +108,21 @@ public struct HomeView: View {
         }
         .padding(20)
     }
+    
+    func removeCard(at index: Int) {
+        cards.remove(at: index)
+    }
 }
 
 
 #Preview {
     HomeView()
+}
+
+
+extension View {
+    func stacked(at position: Int, in total: Int) -> some View {
+        let offSet = Double(total - position)
+        return self.offset(x: 0, y: offSet * 10)
+    }
 }

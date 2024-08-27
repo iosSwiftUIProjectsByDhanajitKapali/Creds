@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-public struct CardView: View {
+struct CardView: View {
     
-    public let cardInfo: CardModel
-    public init(cardInfo: CardModel) {
-        self.cardInfo = cardInfo
-    }
+    let cardInfo: CardModel
+    var removal: (() -> Void)? = nil
+    
+    @State private var offSet = CGSize.zero
     
     public var body: some View {
         VStack(alignment: .leading) {
@@ -54,6 +54,25 @@ public struct CardView: View {
         .padding(20)
         .background(.pink)
         .cornerRadius(20)
+        .background {
+            RoundedRectangle(cornerRadius: 20) // Rounded corners for the border
+                .stroke(Color.black, lineWidth: 1.5)
+        }
+        .rotationEffect(.degrees(Double(offSet.width/5)))
+        .offset(x: offSet.width * 5)
+        .gesture(
+            DragGesture()
+                .onChanged { gesture in
+                    offSet = gesture.translation
+                }
+                .onEnded { _ in
+                    if abs(offSet.width) > 100 {
+                        removal?()
+                    } else {
+                        offSet = .zero
+                    }
+                }
+        )
     }
 }
 
