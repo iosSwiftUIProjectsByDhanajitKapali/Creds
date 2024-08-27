@@ -30,6 +30,21 @@ public struct HomeView: View {
             
             //segmentedCardsView()
             
+            ZStack {
+                wallet()
+                VStack {
+                    Spacer()
+                    addCardButton()
+                }
+            }
+            
+            
+        }
+        .ignoresSafeArea(edges: .bottom)
+    }
+    
+    @ViewBuilder func wallet() -> some View {
+        VStack {
             HStack {
                 Spacer()
                 Text("Your Cards")
@@ -37,20 +52,21 @@ public struct HomeView: View {
                 Spacer()
             }
             listView(cards: [])
-            
-            NavigationLink {
-                AddCardView(inputCardData: { card in
-                    
-                })
-            } label: {
-                Text("New Card")
-                    .foregroundStyle(.black)
-                    .frame(width: 100, height: 50)
-                    .background(.green)
-            }
-
-            .frame(width: 100, height: 50)
         }
+    }
+    
+    @ViewBuilder func addCardButton() -> some View {
+        NavigationLink {
+            AddCardView(inputCardData: { card in
+                
+            })
+        } label: {
+            Text("New Card")
+                .foregroundStyle(.black)
+                .frame(width: 100, height: 50)
+                .background(.green)
+        }
+        .padding(.bottom, 35)
     }
     
     @ViewBuilder func listView(cards: [CardModel]) -> some View {
@@ -60,6 +76,7 @@ public struct HomeView: View {
                     .padding()
             }
         }
+        .scrollIndicators(.hidden)
     }
     
     @ViewBuilder func segmentedCardsView() -> some View {
